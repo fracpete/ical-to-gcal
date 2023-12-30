@@ -36,10 +36,17 @@ setup(
     author='Peter "fracpete" Reutemann',
     author_email='fracpete@gmail.com',
     install_requires=[
+        "wai.logging",
         "requests",
         "icalendar",
         "google-api-python-client",
         "google-auth-httplib2",
         "google-auth-oauthlib",
     ],
+    entry_points={
+        "console_scripts": [
+            "otg-list-gcals=otg.tools.list_google_calendars:sys_main",
+            "otg-list-oevents=otg.tools.list_outlook_events:sys_main",
+        ]
+    }
 )
