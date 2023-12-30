@@ -4,6 +4,7 @@ import traceback
 
 from wai.logging import init_logging, add_logging_level
 from otg.api.outlook import load_calendar
+from icalendar import vDatetime
 
 
 PROG = "otg-list-oevents"
@@ -22,18 +23,22 @@ def list_events(calendar: str, regexp_id: str = None, regexp_summary: str = None
     """
     cal = load_calendar(calendar)
     for event in cal.walk('VEVENT'):
-        id = event.get("UID")
+        id = event["UID"]
         if regexp_id is not None:
             match = re.match(regexp_id, id)
             if not match:
                 continue
-        summary = event.get("SUMMARY")
+        summary = event["SUMMARY"]
         if regexp_summary is not None:
             match = re.match(regexp_summary, summary)
             if not match:
                 continue
         print(id)
-        print("   summary: ", summary)
+        print("   summary:", summary)
+        print("   start:", event["DTSTART"].dt)
+        print("   end:", event["DTEND"].dt)
+        if "RRULE" in event:
+            print("   recurring rule: ", event["RRULE"])
         print()
 
 
