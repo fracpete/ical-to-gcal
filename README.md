@@ -20,7 +20,7 @@ pip install git+https://github.com/fracpete/outlook-to-gcal.git
 
 ## Tools
 
-### List Google Calendars
+### List Google calendars
 
 ```
 usage: otg-list-gcals [-h] -L CREDENTIALS
@@ -36,6 +36,34 @@ optional arguments:
   -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                         The logging level to use. (default: WARN)
 ```
+
+### List Google calendar events
+
+```
+usage: otg-list-gevents [-h] -L CREDENTIALS -c CALENDAR [-i REGEXP_ID]
+                        [-s REGEXP_SUMMARY]
+                        [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
+
+Lists the events in the Outlook Calendar.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -L CREDENTIALS, --credentials CREDENTIALS
+                        Path to the Google OAuth credentials JSON file
+                        (default: None)
+  -c CALENDAR, --calendar CALENDAR
+                        The path or URL of the Outlook calendar (default:
+                        None)
+  -i REGEXP_ID, --regexp_id REGEXP_ID
+                        The regular expression that the event IDs must match.
+                        (default: None)
+  -s REGEXP_SUMMARY, --regexp_summary REGEXP_SUMMARY
+                        The regular expression that the event summary must
+                        match. (default: None)
+  -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+                        The logging level to use. (default: WARN)
+```
+
 
 ### List Outlook calendar events
 
