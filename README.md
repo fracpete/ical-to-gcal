@@ -23,14 +23,14 @@ pip install git+https://github.com/fracpete/outlook-to-gcal.git
 ### List Google Calendars
 
 ```
-usage: otg-list-gcals [-h] -c CREDENTIALS
+usage: otg-list-gcals [-h] -L CREDENTIALS
                       [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 Lists available Google calendars and their IDs.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c CREDENTIALS, --credentials CREDENTIALS
+  -L CREDENTIALS, --credentials CREDENTIALS
                         Path to the Google OAuth credentials JSON file
                         (default: None)
   -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
