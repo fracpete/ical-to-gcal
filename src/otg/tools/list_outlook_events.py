@@ -38,7 +38,7 @@ def list_events(calendar: str, regexp_id: str = None, regexp_summary: str = None
         print("   start:", event["DTSTART"].dt)
         print("   end:", event["DTEND"].dt)
         if "RRULE" in event:
-            print("   recurring rule: ", event["RRULE"])
+            print("   recurrence rule: ", event["RRULE"])
         print()
 
 
