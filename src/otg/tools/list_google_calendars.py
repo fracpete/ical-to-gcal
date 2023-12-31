@@ -42,7 +42,7 @@ def main():
         description='Lists available Google calendars and their IDs.',
         prog=PROG,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-L', '--credentials', type=str, help='Path to the Google OAuth credentials JSON file', required=True)
+    parser.add_argument('-L', '--credentials', metavar="FILE", type=str, help='Path to the Google OAuth credentials JSON file', required=True)
     add_logging_level(parser)
     parsed = parser.parse_args()
 

@@ -74,15 +74,15 @@ def main():
         description='Lists the events in the Outlook Calendar.',
         prog=PROG,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-L', '--credentials', type=str, help='Path to the Google OAuth credentials JSON file', required=True)
-    parser.add_argument('-c', '--calendar', type=str, help='The path or URL of the Outlook calendar', required=True)
-    parser.add_argument('-i', '--regexp_id', type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
-    parser.add_argument('-s', '--regexp_summary', type=str, help='The regular expression that the event summary must match.', required=False, default=None)
+    parser.add_argument('-L', '--credentials', metavar="FILE", type=str, help='Path to the Google OAuth credentials JSON file', required=True)
+    parser.add_argument('-g', '--google_calendar', metavar="ID", type=str, help='The path or URL of the Outlook calendar', required=True)
+    parser.add_argument('--google_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
+    parser.add_argument('--google_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
     add_logging_level(parser)
     parsed = parser.parse_args()
 
     init_logging(default_level=parsed.logging_level)
-    list_events(parsed.credentials, parsed.calendar, regexp_id=parsed.regexp_id, regexp_summary=parsed.regexp_summary)
+    list_events(parsed.credentials, parsed.google_calendar, regexp_id=parsed.google_id, regexp_summary=parsed.google_summary)
 
 
 def sys_main() -> int:
