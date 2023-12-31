@@ -66,14 +66,14 @@ optional arguments:
 ### List Outlook calendar events
 
 ```
-usage: otg-list-oevents [-h] -o ID [-i REGEXP] [-s REGEXP]
+usage: otg-list-oevents [-h] -c ID [-i REGEXP] [-s REGEXP]
                         [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 Lists the events in the Outlook Calendar.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -o ID, --outlook_calendar ID
+  -c ID, --outlook_calendar ID
                         The path or URL of the Outlook calendar (default:
                         None)
   -i REGEXP, --outlook_id REGEXP
