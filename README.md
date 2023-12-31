@@ -29,7 +29,7 @@ Lists available Google calendars and their IDs.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -L FILE, --credentials FILE
+  -L FILE, --google_credentials FILE
                         Path to the Google OAuth credentials JSON file
                         (default: None)
   -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
@@ -39,23 +39,23 @@ optional arguments:
 ### List Google calendar events
 
 ```
-usage: otg-list-gevents [-h] -L FILE -g ID [--google_id REGEXP]
-                        [--google_summary REGEXP]
+usage: otg-list-gevents [-h] -L FILE -C ID [-I REGEXP] [-S REGEXP]
                         [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 Lists the events in the Outlook Calendar.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -L FILE, --credentials FILE
+  -L FILE, --google_credentials FILE
                         Path to the Google OAuth credentials JSON file
                         (default: None)
-  -g ID, --google_calendar ID
+  -C ID, --google_calendar ID
                         The path or URL of the Outlook calendar (default:
                         None)
-  --google_id REGEXP    The regular expression that the event IDs must match.
+  -I REGEXP, --google_id REGEXP
+                        The regular expression that the event IDs must match.
                         (default: None)
-  --google_summary REGEXP
+  -S REGEXP, --google_summary REGEXP
                         The regular expression that the event summary must
                         match. (default: None)
   -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
@@ -66,8 +66,7 @@ optional arguments:
 ### List Outlook calendar events
 
 ```
-usage: otg-list-oevents [-h] -o ID [--outlook_id REGEXP]
-                        [--outlook_summary REGEXP]
+usage: otg-list-oevents [-h] -o ID [-i REGEXP] [-s REGEXP]
                         [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 Lists the events in the Outlook Calendar.
@@ -77,9 +76,10 @@ optional arguments:
   -o ID, --outlook_calendar ID
                         The path or URL of the Outlook calendar (default:
                         None)
-  --outlook_id REGEXP   The regular expression that the event IDs must match.
+  -i REGEXP, --outlook_id REGEXP
+                        The regular expression that the event IDs must match.
                         (default: None)
-  --outlook_summary REGEXP
+  -s REGEXP, --outlook_summary REGEXP
                         The regular expression that the event summary must
                         match. (default: None)
   -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}

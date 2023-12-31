@@ -47,8 +47,8 @@ def main():
         prog=PROG,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-o', '--outlook_calendar', metavar="ID", type=str, help='The path or URL of the Outlook calendar', required=True)
-    parser.add_argument('--outlook_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
-    parser.add_argument('--outlook_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
+    parser.add_argument('-i', '--outlook_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
+    parser.add_argument('-s', '--outlook_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
     add_logging_level(parser)
     parsed = parser.parse_args()
 
