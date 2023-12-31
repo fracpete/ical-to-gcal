@@ -27,9 +27,9 @@ def list_events(calendar: str, regexp_id: str = None, regexp_summary: str = None
         if event_field(event, EVENT_SUMMARY) is not None:
             print("   summary:", event_field(event, EVENT_SUMMARY))
         if event_field(event, EVENT_START) is not None:
-            print("   start:", event_field(event, EVENT_START).dt)
+            print("   start:", event_field(event, EVENT_START))
         if event_field(event, EVENT_END) is not None:
-            print("   end:", event_field(event, EVENT_END).dt)
+            print("   end:", event_field(event, EVENT_END))
         if event_field(event, EVENT_RECURRENCE) is not None:
             print("   recurrence rule: ", event_field(event, EVENT_RECURRENCE))
         print()

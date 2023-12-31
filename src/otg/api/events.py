@@ -1,3 +1,4 @@
+from datetime import datetime, date
 from typing import Optional, Union
 
 import icalendar
@@ -21,14 +22,14 @@ EVENT_FIELDS = [
 ]
 
 
-def event_field(event, field: str) -> Optional[Union[str, object]]:
+def event_field(event, field: str) -> Optional[Union[str, object, datetime, date]]:
     """
     Returns the specified event value.
 
     :param event: the event to get the value fromm
     :param field: the name of the field to retrieve
     :type field: str
-    :return: the value, can be None
+    :return: the value, can be None; summary is empty string when missing; start/end are returned as datetime objects
     """
     if field not in EVENT_FIELDS:
         raise Exception("Unknown event field: %s" % field)
@@ -52,12 +53,12 @@ def event_field(event, field: str) -> Optional[Union[str, object]]:
                 return None
         elif field == EVENT_START:
             if "DTSTART" in event:
-                return event["DTSTART"]
+                return event["DTSTART"].dt
             else:
                 return None
         elif field == EVENT_END:
             if "DTEND" in event:
-                return event["DTEND"]
+                return event["DTEND"].dt
             else:
                 return None
         else:
@@ -81,13 +82,48 @@ def event_field(event, field: str) -> Optional[Union[str, object]]:
                 return None
         elif field == EVENT_START:
             if "start" in event:
-                return event["start"]
+                d = event["start"]
+                if "dateTime" in d:
+                    return datetime.fromisoformat(d["dateTime"])
+                else:
+                    return datetime.strptime(d["date"], "%Y-%m-%d").date()
             else:
                 return None
         elif field == EVENT_END:
             if "end" in event:
-                return event["end"]
+                d = event["end"]
+                if "dateTime" in d:
+                    return datetime.fromisoformat(d["dateTime"])
+                else:
+                    return datetime.strptime(d["date"], "%Y-%m-%d").date()
             else:
                 return None
         else:
             raise Exception("Unhandled event field: %s" % field)
+
+
+def is_same_event(outlook, google) -> bool:
+    """
+    Compares the two events whether they are the same.
+
+    :param outlook: the Outlook event
+    :param google: the Google Calendar event
+    :return: True if they represent the same event
+    :rtype: bool
+    """
+    oid = event_field(outlook, EVENT_ID)
+    gid = google["iCalUID"] if ("iCalUID" in google) else ""
+    return oid == gid
+
+
+def has_event_changed(outlook, google) -> bool:
+    """
+    Checks whether fields differ between the corresponding Outlook/Google events.
+
+    :param outlook: the Outlook event
+    :param google: the Google Calendar event
+    :return: True if at least one field changed
+    :rtype: bool
+    """
+    # TODO
+    return False
