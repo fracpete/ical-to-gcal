@@ -3,11 +3,13 @@ from typing import Optional, Union
 
 import icalendar
 
+
 EVENT_ID = "id"
 EVENT_SUMMARY = "summary"
+EVENT_DESCRIPTION = "description"
 EVENT_LOCATION = "location"
-EVENT_RECURRENCE = "recurrence"
 EVENT_STATUS = "status"
+EVENT_RECURRENCE = "recurrence"
 EVENT_START = "start"
 EVENT_END = "end"
 
@@ -15,10 +17,20 @@ EVENT_FIELDS = [
     EVENT_ID,
     EVENT_SUMMARY,
     EVENT_LOCATION,
-    EVENT_RECURRENCE,
+    EVENT_DESCRIPTION,
     EVENT_STATUS,
+    EVENT_RECURRENCE,
     EVENT_START,
     EVENT_END,
+]
+
+EVENT_COMPARISON_FIELDS = [
+    EVENT_SUMMARY,
+    EVENT_DESCRIPTION,
+    EVENT_LOCATION,
+    EVENT_START,
+    EVENT_END,
+    #EVENT_RECURRENCE,  # TODO
 ]
 
 
@@ -40,6 +52,11 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
         elif field == EVENT_SUMMARY:
             if "SUMMARY" in event:
                 return event["SUMMARY"]
+            else:
+                return ""
+        elif field == EVENT_DESCRIPTION:
+            if "DESCRIPTION" in event:
+                return event["DESCRIPTION"]
             else:
                 return ""
         elif field == EVENT_STATUS:
@@ -69,6 +86,11 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
         elif field == EVENT_SUMMARY:
             if "summary" in event:
                 return event["summary"]
+            else:
+                return ""
+        elif field == EVENT_DESCRIPTION:
+            if "description" in event:
+                return event["description"]
             else:
                 return ""
         elif field == EVENT_STATUS:
@@ -118,12 +140,20 @@ def is_same_event(outlook, google) -> bool:
 
 def has_event_changed(outlook, google) -> bool:
     """
-    Checks whether fields differ between the corresponding Outlook/Google events.
+    Checks whether at least one field differ sbetween the corresponding Outlook/Google events.
 
     :param outlook: the Outlook event
     :param google: the Google Calendar event
     :return: True if at least one field changed
     :rtype: bool
     """
-    # TODO
-    return False
+    result = False
+
+    for field in EVENT_COMPARISON_FIELDS:
+        ovalue = event_field(outlook, field)
+        gvalue = event_field(google, field)
+        if ovalue != gvalue:
+            result = True
+            break
+
+    return result
