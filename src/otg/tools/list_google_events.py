@@ -3,6 +3,7 @@ import traceback
 
 from wai.logging import init_logging, add_logging_level
 from otg.api.google import init_service, filter_events
+from otg.api.events import event_field, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE
 
 
 PROG = "otg-list-gevents"
@@ -24,14 +25,14 @@ def list_events(credentials: str, calendar: str, regexp_id: str = None, regexp_s
     service = init_service(credentials)
     events = filter_events(service, calendar, regexp_id=regexp_id, regexp_summary=regexp_summary)
     for event in events:
-        print(event["id"])
-        print("   summary:", event["summary"])
-        if "start" in event:
-            print("   start:", event["start"])
-        if "end" in event:
-            print("   end:", event["end"])
-        if "recurrence" in event:
-            print("   recurrence rule:", event["recurrence"])
+        print(event_field(event, EVENT_ID))
+        print("   summary:", event_field(event, EVENT_SUMMARY))
+        if event_field(event, EVENT_START) is not None:
+            print("   start:", event_field(event, EVENT_START))
+        if event_field(event, EVENT_END) is not None:
+            print("   end:", event_field(event, EVENT_END))
+        if event_field(event, EVENT_RECURRENCE) is not None:
+            print("   recurrence rule:", event_field(event, EVENT_RECURRENCE))
         print()
         if "nextPageToken" in event:
             print("...not all events listed")

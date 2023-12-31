@@ -3,6 +3,7 @@ import traceback
 
 from wai.logging import init_logging, add_logging_level
 from otg.api.outlook import load_calendar, filter_events
+from otg.api.events import event_field, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE
 
 
 PROG = "otg-list-oevents"
@@ -22,12 +23,15 @@ def list_events(calendar: str, regexp_id: str = None, regexp_summary: str = None
     cal = load_calendar(calendar)
     events = filter_events(cal, regexp_id=regexp_id, regexp_summary=regexp_summary)
     for event in events:
-        print(event["UID"])
-        print("   summary:", event["SUMMARY"])
-        print("   start:", event["DTSTART"].dt)
-        print("   end:", event["DTEND"].dt)
-        if "RRULE" in event:
-            print("   recurrence rule: ", event["RRULE"])
+        print(event_field(event, EVENT_ID))
+        if event_field(event, EVENT_SUMMARY) is not None:
+            print("   summary:", event_field(event, EVENT_SUMMARY))
+        if event_field(event, EVENT_START) is not None:
+            print("   start:", event_field(event, EVENT_START).dt)
+        if event_field(event, EVENT_END) is not None:
+            print("   end:", event_field(event, EVENT_END).dt)
+        if event_field(event, EVENT_RECURRENCE) is not None:
+            print("   recurrence rule: ", event_field(event, EVENT_RECURRENCE))
         print()
 
 
