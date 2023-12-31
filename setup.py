@@ -48,6 +48,7 @@ setup(
             "otg-list-gcals=otg.tools.list_google_calendars:sys_main",
             "otg-list-gevents=otg.tools.list_google_events:sys_main",
             "otg-list-oevents=otg.tools.list_outlook_events:sys_main",
+            "otg-compare-cals=otg.tools.compare_calendars:sys_main",
         ]
     }
 )
