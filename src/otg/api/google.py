@@ -52,7 +52,7 @@ def load_credentials_token() -> Optional[Credentials]:
     """
     path = credentials_token_path()
     if os.path.exists(path):
-        return Credentials.from_authorized_user_file("token.json", SCOPES)
+        return Credentials.from_authorized_user_file(path, SCOPES)
     else:
         logger().info("Token file does not exist (yet): %s" % path)
         return None
