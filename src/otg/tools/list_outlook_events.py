@@ -4,7 +4,6 @@ import traceback
 
 from wai.logging import init_logging, add_logging_level
 from otg.api.outlook import load_calendar
-from icalendar import vDatetime
 
 
 PROG = "otg-list-oevents"
