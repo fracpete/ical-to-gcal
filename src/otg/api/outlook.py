@@ -1,5 +1,8 @@
 import logging
 import os
+import re
+
+from typing import List
 
 import icalendar
 import requests
@@ -70,3 +73,32 @@ def load_calendar(path_or_url: str) -> icalendar.Calendar:
         return load_calendar_from_url(path_or_url)
     else:
         return load_calendar_from_path(path_or_url)
+
+
+def filter_events(calendar: icalendar.Calendar, regexp_id: str = None, regexp_summary: str = None) -> List:
+    """
+    Filters the events.
+
+    :param calendar: the Outlook calendar to filter
+    :type calendar: icalendar.Calendar
+    :param regexp_id: the regexp that the event IDs must match, ignored if None
+    :type regexp_id: str
+    :param regexp_summary: the regexp that the summaries must match, ignored if None
+    :type regexp_summary: str
+    :return: the list of events
+    :rtype: list
+    """
+    result = []
+
+    for event in calendar.walk('VEVENT'):
+        if regexp_id is not None:
+            match = re.match(regexp_id, event["UID"])
+            if not match:
+                continue
+        if regexp_summary is not None:
+            match = re.match(regexp_summary, event["SUMMARY"])
+            if not match:
+                continue
+        result.append(event)
+
+    return result

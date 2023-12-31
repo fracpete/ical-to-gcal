@@ -1,9 +1,8 @@
 import argparse
-import re
 import traceback
 
 from wai.logging import init_logging, add_logging_level
-from otg.api.outlook import load_calendar
+from otg.api.outlook import load_calendar, filter_events
 
 
 PROG = "otg-list-oevents"
@@ -21,19 +20,10 @@ def list_events(calendar: str, regexp_id: str = None, regexp_summary: str = None
     :type regexp_summary: str
     """
     cal = load_calendar(calendar)
-    for event in cal.walk('VEVENT'):
-        id = event["UID"]
-        if regexp_id is not None:
-            match = re.match(regexp_id, id)
-            if not match:
-                continue
-        summary = event["SUMMARY"]
-        if regexp_summary is not None:
-            match = re.match(regexp_summary, summary)
-            if not match:
-                continue
-        print(id)
-        print("   summary:", summary)
+    events = filter_events(cal, regexp_id=regexp_id, regexp_summary=regexp_summary)
+    for event in events:
+        print(event["UID"])
+        print("   summary:", event["SUMMARY"])
         print("   start:", event["DTSTART"].dt)
         print("   end:", event["DTEND"].dt)
         if "RRULE" in event:

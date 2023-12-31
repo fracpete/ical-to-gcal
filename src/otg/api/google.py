@@ -3,7 +3,9 @@
 
 import logging
 import os
+import re
 
+from datetime import datetime
 from typing import Optional
 
 from google.auth.transport.requests import Request
@@ -107,3 +109,51 @@ def init_service(credentials: str):
     except HttpError as error:
         logger().error(f"An error occurred: {error}")
         return None
+
+
+def filter_events(service, calendar: str, regexp_id: str = None, regexp_summary: str = None):
+    """
+    Filters the events from Google calendar.
+
+    :param service: the service instance to use
+    :param calendar: the name of the calendar to retrieve
+    :type calendar: str
+    :param regexp_id: the regular expression that the event IDs must match, ignored if None
+    :type regexp_id: str
+    :param regexp_summary: the regular expression that the event summaries must match, ignored if None
+    :type regexp_summary: str
+    :return:
+    """
+    result = []
+
+    # at most 1 year's worth
+    # TODO parameters?
+    timeMin = datetime.utcnow().isoformat() + "Z"
+    timeMax = datetime.utcnow()
+    timeMax = timeMax.replace(year=timeMax.year + 1)
+    timeMax = timeMax.isoformat() + "Z"
+
+    events = (
+        service.events().list(
+            calendarId=calendar,
+            showDeleted=False,
+            timeMin=timeMin,
+            timeMax=timeMax,
+        ).execute()
+    )
+
+    for event in events["items"]:
+        if event["status"].lower() == "cancelled":
+            continue
+        if regexp_id is not None:
+            match = re.match(regexp_id, event["id"])
+            if not match:
+                continue
+        if "summary" in event:
+            if regexp_summary is not None:
+                match = re.match(regexp_summary, event["summary"])
+                if not match:
+                    continue
+        result.append(event)
+
+    return result

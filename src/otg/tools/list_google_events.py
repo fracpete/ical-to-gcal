@@ -1,11 +1,8 @@
 import argparse
-import re
 import traceback
 
-from datetime import datetime
-
 from wai.logging import init_logging, add_logging_level
-from otg.api.google import init_service
+from otg.api.google import init_service, filter_events
 
 
 PROG = "otg-list-gevents"
@@ -25,39 +22,10 @@ def list_events(credentials: str, calendar: str, regexp_id: str = None, regexp_s
     :type regexp_summary: str
     """
     service = init_service(credentials)
-
-    # at most 1 year's worth
-    timeMin = datetime.utcnow().isoformat() + "Z"
-    timeMax = datetime.utcnow()
-    timeMax = timeMax.replace(year=timeMax.year + 1)
-    timeMax = timeMax.isoformat() + "Z"
-
-    events = (
-        service.events().list(
-            calendarId=calendar,
-            showDeleted=False,
-            timeMin=timeMin,
-            timeMax=timeMax,
-        ).execute()
-    )
-
-    for event in events["items"]:
-        if event["status"].lower() == "cancelled":
-            continue
-        id = event["id"]
-        if regexp_id is not None:
-            match = re.match(regexp_id, id)
-            if not match:
-                continue
-        summary = ""
-        if "summary" in event:
-            summary = event["summary"]
-            if regexp_summary is not None:
-                match = re.match(regexp_summary, summary)
-                if not match:
-                    continue
-        print(id)
-        print("   summary:", summary)
+    events = filter_events(service, calendar, regexp_id=regexp_id, regexp_summary=regexp_summary)
+    for event in events:
+        print(event["id"])
+        print("   summary:", event["summary"])
         if "start" in event:
             print("   start:", event["start"])
         if "end" in event:
