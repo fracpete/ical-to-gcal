@@ -16,7 +16,7 @@ from googleapiclient.errors import HttpError
 from otg.api.core import get_default_config_dir
 
 
-SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 
 _logger = None
@@ -83,9 +83,10 @@ def init_credentials(credentials: str, creds: Credentials = None) -> Credentials
     :return: the credentials object
     :rtype: Credentials
     """
-    if (creds is not None) and not creds.valid:
-        logger().info("Refreshing token...")
-        creds.refresh(Request())
+    if creds is not None:
+        if not creds.valid:
+            logger().info("Refreshing token...")
+            creds.refresh(Request())
     else:
         logger().info("Creating token from credentials...")
         flow = InstalledAppFlow.from_client_secrets_file(credentials, SCOPES)
