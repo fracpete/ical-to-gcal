@@ -1,3 +1,5 @@
+import logging
+
 from datetime import datetime, date
 from typing import Optional, Union
 
@@ -30,8 +32,24 @@ EVENT_COMPARISON_FIELDS = [
     EVENT_LOCATION,
     EVENT_START,
     EVENT_END,
-    #EVENT_RECURRENCE,  # TODO
+    #EVENT_RECURRENCE,
 ]
+
+
+_logger = None
+
+
+def logger() -> logging.Logger:
+    """
+    Return the logger to use.
+
+    :return: the logger
+    :rtype: logging.Logger
+    """
+    global _logger
+    if _logger is None:
+        _logger = logging.getLogger("otg.api.events")
+    return _logger
 
 
 def event_field(event, field: str) -> Optional[Union[str, object, datetime, date]]:
@@ -41,7 +59,7 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
     :param event: the event to get the value fromm
     :param field: the name of the field to retrieve
     :type field: str
-    :return: the value, can be None; summary is empty string when missing; start/end are returned as datetime objects
+    :return: the value, can be None; summary/description is empty string when missing; start/end are returned as datetime objects
     """
     if field not in EVENT_FIELDS:
         raise Exception("Unknown event field: %s" % field)
@@ -50,24 +68,15 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
         if field == EVENT_ID:
             return event["UID"]
         elif field == EVENT_SUMMARY:
-            if "SUMMARY" in event:
-                return event["SUMMARY"]
-            else:
-                return ""
+            return event.get("SUMMARY", "")
         elif field == EVENT_DESCRIPTION:
-            if "DESCRIPTION" in event:
-                return event["DESCRIPTION"]
-            else:
-                return ""
+            return event.get("DESCRIPTION", "")
         elif field == EVENT_STATUS:
             return event["STATUS"]
         elif field == EVENT_LOCATION:
-            return event["LOCATION"]
+            return event.get("LOCATION", "")
         elif field == EVENT_RECURRENCE:
-            if "RRULE" in event:
-                return event["RRULE"]
-            else:
-                return None
+            return event.get("RRULE")
         elif field == EVENT_START:
             if "DTSTART" in event:
                 return event["DTSTART"].dt
@@ -84,24 +93,15 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
         if field == EVENT_ID:
             return event["id"]
         elif field == EVENT_SUMMARY:
-            if "summary" in event:
-                return event["summary"]
-            else:
-                return ""
+            return event.get("summary", "")
         elif field == EVENT_DESCRIPTION:
-            if "description" in event:
-                return event["description"]
-            else:
-                return ""
+            return event.get("description", "")
         elif field == EVENT_STATUS:
             return event["status"]
         elif field == EVENT_LOCATION:
-            return event["location"]
+            return event.get("location", "")
         elif field == EVENT_RECURRENCE:
-            if "recurrence" in event:
-                return event["recurrence"]
-            else:
-                return None
+            return event.get("recurrence")
         elif field == EVENT_START:
             if "start" in event:
                 d = event["start"]
@@ -153,6 +153,8 @@ def has_event_changed(outlook, google) -> bool:
         ovalue = event_field(outlook, field)
         gvalue = event_field(google, field)
         if ovalue != gvalue:
+            logger().info("event changed: %s" % event_field(outlook, EVENT_ID))
+            logger().info("- field/outlook/google: %s/%s/%s" % (field, ovalue, gvalue))
             result = True
             break
 

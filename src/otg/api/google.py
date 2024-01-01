@@ -137,7 +137,7 @@ def filter_events(service, calendar: str, regexp_id: str = None, regexp_summary:
     events = (
         service.events().list(
             calendarId=calendar,
-            showDeleted=False,
+            showDeleted=True,
             timeMin=timeMin,
             timeMax=timeMax,
         ).execute()
