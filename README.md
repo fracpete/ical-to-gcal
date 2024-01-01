@@ -1,6 +1,13 @@
 # outlook-to-gcal
 Syncing Outlook Calendar with Google Calendar
 
+
+## Documentation
+
+* [icalendar library](https://icalendar.readthedocs.io/en/latest/)
+* [Google Calendar API](https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/)
+
+
 ## Requirements
 
 * Outlook
