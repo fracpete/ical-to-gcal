@@ -7,7 +7,7 @@ from typing import List, Dict
 import icalendar
 
 from googleapiclient.errors import HttpError
-from otg.api.events import EVENT_ID, EVENT_SUMMARY, EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_RECURRENCE, EVENT_STATUS, EVENT_START, EVENT_END
+from otg.api.events import EVENT_ID, EVENT_SUMMARY, EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_RECURRENCE, EVENT_STATUS, EVENT_START, EVENT_END, EVENT_UPDATED
 from otg.api.events import event_field, is_same_event, has_event_changed
 
 

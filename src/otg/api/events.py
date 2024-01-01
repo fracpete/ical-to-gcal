@@ -14,6 +14,7 @@ EVENT_STATUS = "status"
 EVENT_RECURRENCE = "recurrence"
 EVENT_START = "start"
 EVENT_END = "end"
+EVENT_UPDATED = "updated"
 
 EVENT_FIELDS = [
     EVENT_ID,
@@ -24,6 +25,7 @@ EVENT_FIELDS = [
     EVENT_RECURRENCE,
     EVENT_START,
     EVENT_END,
+    EVENT_UPDATED,
 ]
 
 EVENT_COMPARISON_FIELDS = [
@@ -33,6 +35,7 @@ EVENT_COMPARISON_FIELDS = [
     EVENT_START,
     EVENT_END,
     #EVENT_RECURRENCE,
+    EVENT_UPDATED,
 ]
 
 
@@ -87,6 +90,11 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
                 return event["DTEND"].dt
             else:
                 return None
+        elif field == EVENT_UPDATED:
+            if "DTSTAMP" in event:
+                return event["DTSTAMP"].dt
+            else:
+                return None
         else:
             raise Exception("Unhandled event field: %s" % field)
     else:
@@ -118,6 +126,11 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
                     return datetime.fromisoformat(d["dateTime"])
                 else:
                     return datetime.strptime(d["date"], "%Y-%m-%d").date()
+            else:
+                return None
+        elif field == EVENT_UPDATED:
+            if "updated" in event:
+                return datetime.fromisoformat(event["updated"].replace("Z", "+00:00"))
             else:
                 return None
         else:
@@ -152,6 +165,10 @@ def has_event_changed(outlook, google) -> bool:
     for field in EVENT_COMPARISON_FIELDS:
         ovalue = event_field(outlook, field)
         gvalue = event_field(google, field)
+        if field == EVENT_UPDATED:
+            # only flag as changed if Outlook is newer
+            if gvalue < ovalue:
+                continue
         if ovalue != gvalue:
             logger().info("event changed: %s" % event_field(outlook, EVENT_ID))
             logger().info("- field/outlook/google: %s/%s/%s" % (field, ovalue, gvalue))
