@@ -129,10 +129,10 @@ optional arguments:
 
 ```
 usage: otg-sync-cals [-h] -c ID [-i REGEXP] [-s REGEXP] -L FILE -C ID
-                     [-I REGEXP] [-S REGEXP]
+                     [-I REGEXP] [-S REGEXP] [-n] [-p SEC]
                      [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
-Compares the Outlook and Google Calendar and outputs the proprosed actions.
+Syncs the Outlook calendar with the Google one.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -157,6 +157,11 @@ optional arguments:
   -S REGEXP, --google_summary REGEXP
                         The regular expression that the event summary must
                         match. (default: None)
+  -n, --dry_run         Whether to perform a dry-run instead, not changing
+                        Google calendar at all. (default: False)
+  -p SEC, --poll_interval SEC
+                        The interval to poll the Outlook calendar in seconds.
+                        (default: None)
   -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                         The logging level to use. (default: WARN)
 ```
