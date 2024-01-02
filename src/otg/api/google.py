@@ -129,17 +129,17 @@ def filter_events(service, calendar: str, regexp_id: str = None, regexp_summary:
 
     # at most 1 year's worth
     # TODO parameters?
-    timeMin = datetime.utcnow().isoformat() + "Z"
-    timeMax = datetime.utcnow()
-    timeMax = timeMax.replace(year=timeMax.year + 1)
-    timeMax = timeMax.isoformat() + "Z"
+    time_min = datetime.utcnow().isoformat() + "Z"
+    time_max = datetime.utcnow()
+    time_max = time_max.replace(year=time_max.year + 1)
+    time_max = time_max.isoformat() + "Z"
 
     events = (
         service.events().list(
             calendarId=calendar,
             showDeleted=True,
-            timeMin=timeMin,
-            timeMax=timeMax,
+            timeMin=time_min,
+            timeMax=time_max,
         ).execute()
     )
 

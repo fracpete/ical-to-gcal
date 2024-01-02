@@ -67,7 +67,10 @@ def sync_events(outlook_calendar: str, google_credentials: str, google_calendar:
         google_events = gfilter_events(google_service, google_calendar, regexp_id=google_id, regexp_summary=google_summary)
 
         comparison = compare(outlook_events, google_events)
-        sync(google_service, google_calendar, comparison, dry_run=dry_run)
+        errors = sync(google_service, google_calendar, comparison, dry_run=dry_run)
+        num_errors = sum([len(errors[x]) for x in errors])
+        if num_errors > 0:
+            logger().warning("%d errors occurred!")
 
         if poll_interval is None:
             break

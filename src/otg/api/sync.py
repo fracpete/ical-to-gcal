@@ -1,8 +1,9 @@
 import json
 import logging
+import traceback
 
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Any
 
 import icalendar
 
@@ -37,7 +38,7 @@ def logger() -> logging.Logger:
     return _logger
 
 
-def compare(outlook_events: List, google_events: List) -> Dict[str, List]:
+def compare(outlook_events: List, google_events: List) -> Dict[str, List[Any]]:
     """
     Compares the Outlook and Google events and returns a dictionary with
     add/delete/update lists of events.
@@ -223,7 +224,7 @@ def update_event(service, gcalendar: str, oevent, gevent, dry_run: bool = False)
             return False
 
 
-def sync(service, gcalendar: str, actions: Dict[str, List], dry_run: bool = False):
+def sync(service, gcalendar: str, actions: Dict[str, List], dry_run: bool = False) -> Dict[str, List[Any]]:
     """
     Performs the sync.
 
@@ -234,17 +235,38 @@ def sync(service, gcalendar: str, actions: Dict[str, List], dry_run: bool = Fals
     :type actions: dict
     :param dry_run: whether to perform a dry-run only and not change the Google Calendar at all
     :type dry_run: bool
+    :return: the dictionary with events per action that failed: action -> list of tuples; with last element in tuple the exception string
+    :rtype: dict
     """
+    result = dict()
+    for action in ACTIONS:
+        result[action] = []
+
     for action in actions:
         if action == ACTION_ADD:
             for oevent in actions[action]:
-                logger().info("adding: %s" % str(oevent))
-                add_event(service, gcalendar, oevent, dry_run=dry_run)
+                try:
+                    logger().info("adding: %s" % str(oevent))
+                    add_event(service, gcalendar, oevent, dry_run=dry_run)
+                except:
+                    result[action].append((oevent, traceback.format_exc()))
         elif action == ACTION_UPDATE:
             for oevent, gevent in actions[action]:
-                logger().info("updating: %s -> %s" % (str(oevent), str(gevent)))
-                update_event(service, gcalendar, oevent, gevent, dry_run=dry_run)
+                try:
+                    logger().info("updating: %s -> %s" % (str(oevent), str(gevent)))
+                    update_event(service, gcalendar, oevent, gevent, dry_run=dry_run)
+                except:
+                    result[action].append((oevent, gevent, traceback.format_exc()))
         elif action == ACTION_DELETE:
             for gevent in actions[action]:
-                logger().info("deleting: %s" % str(gevent))
-                delete_event(service, gcalendar, gevent, dry_run=dry_run)
+                try:
+                    logger().info("deleting: %s" % str(gevent))
+                    delete_event(service, gcalendar, gevent, dry_run=dry_run)
+                except:
+                    result[action].append((gevent, traceback.format_exc()))
+
+    for action in ACTIONS:
+        if len(result[action]) == 0:
+            del result[action]
+
+    return result
