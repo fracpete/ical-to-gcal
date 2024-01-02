@@ -1,5 +1,5 @@
 # outlook-to-gcal
-Syncing Outlook Calendar with Google Calendar
+Syncing Outlook Calendar (from Office 365) with Google Calendar
 
 
 ## Documentation
@@ -17,6 +17,7 @@ Syncing Outlook Calendar with Google Calendar
 * Google
 
   * Enable Calendar API and create app as per [these instructions](https://developers.google.com/calendar/api/quickstart/python)
+  * Download the credentials as `credentials.json` and store them in a safe location
 
 
 ## Installation
@@ -24,6 +25,35 @@ Syncing Outlook Calendar with Google Calendar
 ```bash
 pip install git+https://github.com/fracpete/outlook-to-gcal.git
 ```
+
+
+## How to sync
+
+Setup:
+
+* fulfill above requirements
+* install library as per above
+* publish Outlook Calendar and determine its URL (Settings -> Calendar -> Share Calendars -> Publish a Calendar -> `OUTLOOK_ICS_URL`)
+* create new Google Calendar (makes it easier to remove when stuffed up)
+* determine ID of Google Calendar using `otg-list-gcals` tool below (`GCAL_ID`)
+
+The following will perform a sync every 15min:
+
+```bash
+otg-sync-cals \
+  -l INFO \
+  -c OUTLOOK_ICS_URL \
+  -i "[^@]+ " \
+  -L /safe/location/credentials.json \
+  -C GCAL_ID \
+  -p 900
+```
+
+Notes:
+
+* `-l INFO` - outputs some logging information
+* `-i "[^@]+"` - omits Outlook Calendar entries that have come from Google (`LONG_ID@gmail.com`)
+
 
 ## Tools
 
