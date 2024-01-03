@@ -93,7 +93,7 @@ def add_event(service, gcalendar: str, oevent, dry_run: bool = False) -> bool:
     :return: True if successfully added
     :rtype: bool
     """
-    logger().info("adding: %s" % event_field(oevent, EVENT_ID))
+    logger().info("adding: %s" % str(oevent))
     body = {
         "summary": event_field(oevent, EVENT_SUMMARY),
         "iCalUID": event_field(oevent, EVENT_ID),
@@ -114,6 +114,7 @@ def add_event(service, gcalendar: str, oevent, dry_run: bool = False) -> bool:
         else:
             body["start"] = {"date": start.strftime("%Y-%m-%d")}
             body["end"] = {"date": end.strftime("%Y-%m-%d")}
+        logger().info("event: %s-%s: %s" % (str(start), str(end), event_field(oevent, EVENT_SUMMARY)))
     if event_field(oevent, EVENT_RECURRENCE) is not None:
         body["recurrence"] = ["RRULE:" + event_field(oevent, EVENT_RECURRENCE).to_ical().decode()]
 
@@ -147,7 +148,7 @@ def delete_event(service, gcalendar: str, gevent, dry_run: bool = False) -> bool
     :return: True if successfully deleted
     :rtype: bool
     """
-    logger().info("deleting: %s" % event_field(gevent, EVENT_ID))
+    logger().info("deleting: %s" % str(gevent))
     if dry_run:
         return True
     else:
@@ -180,9 +181,9 @@ def update_event(service, gcalendar: str, oevent, gevent, dry_run: bool = False)
     :rtype: bool
     """
     if gevent is None:
-        logger().info("updating %s" % event_field(oevent, EVENT_ID))
+        logger().info("updating %s" % str(oevent))
     else:
-        logger().info("updating %s with %s" % (event_field(gevent, EVENT_ID), event_field(oevent, EVENT_ID)))
+        logger().info("updating %s with %s" % (str(gevent), str(oevent)))
     body = {
         "summary": event_field(oevent, EVENT_SUMMARY),
         "iCalUID": event_field(oevent, EVENT_ID),
@@ -203,6 +204,7 @@ def update_event(service, gcalendar: str, oevent, gevent, dry_run: bool = False)
         else:
             body["start"] = {"date": start.strftime("%Y-%m-%d")}
             body["end"] = {"date": end.strftime("%Y-%m-%d")}
+        logger().info("event: %s-%s: %s" % (str(start), str(end), event_field(oevent, EVENT_SUMMARY)))
     if event_field(oevent, EVENT_RECURRENCE) is not None:
         body["recurrence"] = ["RRULE:" + event_field(oevent, EVENT_RECURRENCE).to_ical().decode()]
 
@@ -241,26 +243,29 @@ def sync(service, gcalendar: str, actions: Dict[str, List], dry_run: bool = Fals
     result = dict()
     for action in ACTIONS:
         result[action] = []
+    added = set()
 
     for action in actions:
         if action == ACTION_ADD:
             for oevent in actions[action]:
-                try:
-                    logger().info("adding: %s" % str(oevent))
-                    add_event(service, gcalendar, oevent, dry_run=dry_run)
-                except:
-                    result[action].append((oevent, traceback.format_exc()))
+                uid = event_field(oevent, EVENT_ID)
+                if uid in added:
+                    logger().info("already added, skipping: %s" % uid)
+                else:
+                    try:
+                        add_event(service, gcalendar, oevent, dry_run=dry_run)
+                        added.add(uid)
+                    except:
+                        result[action].append((oevent, traceback.format_exc()))
         elif action == ACTION_UPDATE:
             for oevent, gevent in actions[action]:
                 try:
-                    logger().info("updating: %s -> %s" % (str(oevent), str(gevent)))
                     update_event(service, gcalendar, oevent, gevent, dry_run=dry_run)
                 except:
                     result[action].append((oevent, gevent, traceback.format_exc()))
         elif action == ACTION_DELETE:
             for gevent in actions[action]:
                 try:
-                    logger().info("deleting: %s" % str(gevent))
                     delete_event(service, gcalendar, gevent, dry_run=dry_run)
                 except:
                     result[action].append((gevent, traceback.format_exc()))
