@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import shutil
 
 from typing import List
 
@@ -24,12 +25,14 @@ def logger() -> logging.Logger:
     return _logger
 
 
-def load_calendar_from_url(url: str) -> icalendar.Calendar:
+def load_calendar_from_url(url: str, output_file: str = None) -> icalendar.Calendar:
     """
     Loads a calendar from a URL.
 
     :param url: the URL to load the calendar from
     :type url: str
+    :param output_file: the file to save the calendar to, ignored if None
+    :type output_file: str
     :return: the calendar
     :rtype: icalendar.Calendar
     """
@@ -37,17 +40,26 @@ def load_calendar_from_url(url: str) -> icalendar.Calendar:
     r = requests.get(url)
     if r.status_code == 200:
         result = icalendar.Calendar.from_ical(r.text)
+        if output_file is not None:
+            try:
+                with open(output_file, "w") as fp:
+                    fp.write(r.text)
+                    fp.write("\n")
+            except:
+                logger().error("Failed to save Outlook calendar to: %s" % output_file)
         return result
     else:
         raise Exception("Failed to retrieve Outlook calendar '%s', status code: %d" % (url, r.status_code))
 
 
-def load_calendar_from_path(path: str) -> icalendar.Calendar:
+def load_calendar_from_path(path: str, output_file: str = None) -> icalendar.Calendar:
     """
     Loads a calendar from a file.
 
     :param path: the calendar file to load
     :type path: str
+    :param output_file: the file to save the calendar to, ignored if None
+    :type output_file: str
     :return: the calendar
     :rtype: icalendar.Calendar
     """
@@ -55,24 +67,31 @@ def load_calendar_from_path(path: str) -> icalendar.Calendar:
     if os.path.exists(path) and os.path.isfile(path):
         with open(path) as fp:
             result = icalendar.Calendar.from_ical(fp.read())
+            if output_file is not None:
+                try:
+                    shutil.copy(path, output_file)
+                except:
+                    logger().error("Failed to copy Outlook calendar to: %s" % output_file)
             return result
     else:
         raise IOError("Calendar file does not exist: %s" % path)
 
 
-def load_calendar(path_or_url: str) -> icalendar.Calendar:
+def load_calendar(path_or_url: str, output_file: str = None) -> icalendar.Calendar:
     """
     Loads the shared Outlook calendar by its public .ics path or URL.
 
     :param path_or_url: the path or URL of the calendar to load
     :type path_or_url: str
+    :param output_file: the file to save the calendar to, ignored if None
+    :type output_file: str
     :return: the calendar
     :rtype: icalendar.Calendar
     """
     if path_or_url.startswith("http:") or path_or_url.startswith("https:"):
-        return load_calendar_from_url(path_or_url)
+        return load_calendar_from_url(path_or_url, output_file=output_file)
     else:
-        return load_calendar_from_path(path_or_url)
+        return load_calendar_from_path(path_or_url, output_file=output_file)
 
 
 def filter_events(calendar: icalendar.Calendar, regexp_id: str = None, regexp_summary: str = None) -> List:
