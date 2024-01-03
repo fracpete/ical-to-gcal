@@ -15,6 +15,7 @@ EVENT_RECURRENCE = "recurrence"
 EVENT_START = "start"
 EVENT_END = "end"
 EVENT_UPDATED = "updated"
+EVENT_ICALUID = "icaluid"
 
 EVENT_FIELDS = [
     EVENT_ID,
@@ -26,6 +27,7 @@ EVENT_FIELDS = [
     EVENT_START,
     EVENT_END,
     EVENT_UPDATED,
+    EVENT_ICALUID,
 ]
 
 EVENT_COMPARISON_FIELDS = [
@@ -67,7 +69,7 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
         raise Exception("Unknown event field: %s" % field)
 
     if isinstance(event, icalendar.Event):
-        if field == EVENT_ID:
+        if (field == EVENT_ID) or (field == EVENT_ICALUID):
             return event["UID"]
         elif field == EVENT_SUMMARY:
             return event.get("SUMMARY", "")
@@ -99,6 +101,8 @@ def event_field(event, field: str) -> Optional[Union[str, object, datetime, date
     else:
         if field == EVENT_ID:
             return event["id"]
+        elif field == EVENT_ICALUID:
+            return event.get("iCalUID")
         elif field == EVENT_SUMMARY:
             return event.get("summary", "")
         elif field == EVENT_DESCRIPTION:
