@@ -5,7 +5,7 @@ Syncing Outlook Calendar (from Office 365) with Google Calendar
 ## Documentation
 
 * [icalendar library](https://icalendar.readthedocs.io/en/latest/)
-* [Google Calendar API](https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/)
+* [Google Calendar API](https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/) ([quickstart Python](https://developers.google.com/calendar/api/quickstart/python))
 
 
 ## Requirements
@@ -53,6 +53,8 @@ Notes:
 
 * `-l INFO` - outputs some logging information
 * `-i "[^@]+"` - omits Outlook Calendar entries that have come from Google (`LONG_ID@gmail.com`)
+* Treat the Google Calendar as read-only and only add/update/delete calendar entries in the Outlook one,
+  otherwise you will end up with errors (e.g., `duplicate entry`)
 
 
 ## Tools
