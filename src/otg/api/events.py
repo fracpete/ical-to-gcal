@@ -1,7 +1,7 @@
 import logging
 
 from datetime import datetime, date
-from typing import Optional, Union
+from typing import Optional, Union, Tuple, List, Any
 
 import icalendar
 
@@ -179,3 +179,32 @@ def has_event_changed(outlook, google) -> bool:
             break
 
     return result
+
+
+def date_range(events: List[Any]) -> Tuple[Optional[date], Optional[date]]:
+    """
+    Determines the date range of the events and returns the start/end date objects.
+
+    :param events: the events to process
+    :type events: list
+    :return: the tuple of start/end date objects; can be None if no start/end dates found
+    :rtype: tuple
+    """
+    start = None
+    end = None
+
+    for event in events:
+        ds = event_field(event, EVENT_START)
+        if isinstance(ds, datetime):
+            ds = ds.date()
+        de = event_field(event, EVENT_END)
+        if isinstance(de, datetime):
+            de = de.date()
+        if (ds is None) or (de is None):
+            continue
+        if (start is None) or (start > ds):
+            start = ds
+        if (end is None) or (end < de):
+            end = de
+
+    return start, end

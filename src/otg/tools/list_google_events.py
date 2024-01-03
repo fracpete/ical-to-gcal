@@ -3,7 +3,7 @@ import traceback
 
 from wai.logging import init_logging, add_logging_level
 from otg.api.google import init_service, filter_events
-from otg.api.events import event_field, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE, EVENT_ICALUID
+from otg.api.events import event_field, date_range, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE, EVENT_ICALUID
 
 
 PROG = "otg-list-gevents"
@@ -24,6 +24,9 @@ def list_events(credentials: str, calendar: str, regexp_id: str = None, regexp_s
     """
     service = init_service(credentials)
     events = filter_events(service, calendar, regexp_id=regexp_id, regexp_summary=regexp_summary)
+    start, end = date_range(events)
+    print("Date range:", start, "-", end)
+    print()
     for event in events:
         print(event_field(event, EVENT_ID))
         print("   summary:", event_field(event, EVENT_SUMMARY))

@@ -3,7 +3,7 @@ import traceback
 
 from wai.logging import init_logging, add_logging_level
 from otg.api.outlook import load_calendar, filter_events
-from otg.api.events import event_field, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE
+from otg.api.events import event_field, date_range, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE
 
 
 PROG = "otg-list-oevents"
@@ -22,6 +22,9 @@ def list_events(calendar: str, regexp_id: str = None, regexp_summary: str = None
     """
     cal = load_calendar(calendar)
     events = filter_events(cal, regexp_id=regexp_id, regexp_summary=regexp_summary)
+    start, end = date_range(events)
+    print("Date range:", start, "-", end)
+    print()
     for event in events:
         print(event_field(event, EVENT_ID))
         if event_field(event, EVENT_SUMMARY) is not None:
