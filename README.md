@@ -1,5 +1,5 @@
-# outlook-to-gcal
-Syncing Outlook Calendar (from Office 365) with Google Calendar
+# ical-to-gcal
+Syncing iCal calendars like Outlook (from Office 365) with Google Calendar.
 
 
 ## Documentation
