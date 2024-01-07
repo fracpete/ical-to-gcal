@@ -52,7 +52,7 @@ def logger() -> logging.Logger:
     """
     global _logger
     if _logger is None:
-        _logger = logging.getLogger("otg.api.events")
+        _logger = logging.getLogger("itg.api.events")
     return _logger
 
 

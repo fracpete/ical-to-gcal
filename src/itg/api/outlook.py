@@ -21,7 +21,7 @@ def logger() -> logging.Logger:
     """
     global _logger
     if _logger is None:
-        _logger = logging.getLogger("otg.api.outlook")
+        _logger = logging.getLogger("itg.api.outlook")
     return _logger
 
 

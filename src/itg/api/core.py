@@ -14,7 +14,7 @@ def logger() -> logging.Logger:
     """
     global _logger
     if _logger is None:
-        _logger = logging.getLogger("otg.api.core")
+        _logger = logging.getLogger("itg.api.core")
     return _logger
 
 

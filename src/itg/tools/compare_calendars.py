@@ -2,28 +2,28 @@ import argparse
 import traceback
 
 from wai.logging import init_logging, add_logging_level
-from otg.api.outlook import load_calendar
-from otg.api.outlook import filter_events as ofilter_events
-from otg.api.google import init_service
-from otg.api.google import filter_events as gfilter_events
-from otg.api.sync import compare, ACTIONS
+from itg.api.outlook import load_calendar
+from itg.api.outlook import filter_events as ofilter_events
+from itg.api.google import init_service
+from itg.api.google import filter_events as gfilter_events
+from itg.api.sync import compare, ACTIONS
 
 
-PROG = "otg-compare-cals"
+PROG = "itg-compare-cals"
 
 
-def compare_events(outlook_calendar: str, google_credentials: str, google_calendar: str,
-                   outlook_id: str = None, outlook_summary: str = None,
+def compare_events(ical_calendar: str, google_credentials: str, google_calendar: str,
+                   ical_id: str = None, ical_summary: str = None,
                    google_id: str = None, google_summary: str = None):
     """
-    Lists the events from the Outlook calendar.
+    Lists the events from the iCal/Outlook calendar.
 
-    :param outlook_calendar: the path or URL of the Outlook calendar to list
-    :type outlook_calendar: str
-    :param outlook_id: the regular expression that the event IDs must match, ignored if None
-    :type outlook_id: str
-    :param outlook_summary: the regular expression that the event summaries must match, ignored if None
-    :type outlook_summary: str
+    :param ical_calendar: the path or URL of the iCal/Outlook calendar to list
+    :type ical_calendar: str
+    :param ical_id: the regular expression that the event IDs must match, ignored if None
+    :type ical_id: str
+    :param ical_summary: the regular expression that the event summaries must match, ignored if None
+    :type ical_summary: str
     :param google_credentials: the credentials JSON file to use
     :type google_credentials: str
     :param google_calendar: the calendar ID
@@ -34,14 +34,14 @@ def compare_events(outlook_calendar: str, google_credentials: str, google_calend
     :type google_summary: str
     """
     # outlook
-    outlook_cal = load_calendar(outlook_calendar)
-    outlook_events = ofilter_events(outlook_cal, regexp_id=outlook_id, regexp_summary=outlook_summary)
+    ical_cal = load_calendar(ical_calendar)
+    ical_events = ofilter_events(ical_cal, regexp_id=ical_id, regexp_summary=ical_summary)
 
     # google
     google_service = init_service(google_credentials)
     google_events = gfilter_events(google_service, google_calendar, regexp_id=google_id, regexp_summary=google_summary)
 
-    comparison = compare(outlook_events, google_events)
+    comparison = compare(ical_events, google_events)
     for action in ACTIONS:
         if action in comparison:
             events = comparison[action]
@@ -54,22 +54,22 @@ def compare_events(outlook_calendar: str, google_credentials: str, google_calend
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Compares the Outlook and Google Calendar and outputs the proprosed actions.',
+        description='Compares the iCal/Outlook and Google Calendar and outputs the proprosed actions.',
         prog=PROG,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-c', '--outlook_calendar', metavar="ID", type=str, help='The path or URL of the Outlook calendar', required=True)
-    parser.add_argument('-i', '--outlook_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
-    parser.add_argument('-s', '--outlook_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
+    parser.add_argument('-c', '--ical_calendar', metavar="ID", type=str, help='The path or URL of the iCal/Outlook calendar', required=True)
+    parser.add_argument('-i', '--ical_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
+    parser.add_argument('-s', '--ical_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
     parser.add_argument('-L', '--google_credentials', metavar="FILE", type=str, help='Path to the Google OAuth credentials JSON file', required=True)
-    parser.add_argument('-C', '--google_calendar', metavar="ID", type=str, help='The path or URL of the Outlook calendar', required=True)
+    parser.add_argument('-C', '--google_calendar', metavar="ID", type=str, help='The ID of the Google calendar', required=True)
     parser.add_argument('-I', '--google_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
     parser.add_argument('-S', '--google_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
     add_logging_level(parser)
     parsed = parser.parse_args()
 
     init_logging(default_level=parsed.logging_level)
-    compare_events(parsed.outlook_calendar, parsed.google_credentials, parsed.google_calendar,
-                   outlook_id=parsed.outlook_id, outlook_summary=parsed.outlook_summary,
+    compare_events(parsed.ical_calendar, parsed.google_credentials, parsed.google_calendar,
+                   ical_id=parsed.ical_id, ical_summary=parsed.ical_summary,
                    google_id=parsed.google_id, google_summary=parsed.google_summary)
 
 

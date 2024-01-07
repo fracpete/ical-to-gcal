@@ -5,14 +5,14 @@ import traceback
 from time import sleep
 
 from wai.logging import init_logging, add_logging_level
-from otg.api.outlook import load_calendar
-from otg.api.outlook import filter_events as ofilter_events
-from otg.api.google import init_service
-from otg.api.google import filter_events as gfilter_events
-from otg.api.sync import compare, sync
+from itg.api.outlook import load_calendar
+from itg.api.outlook import filter_events as ofilter_events
+from itg.api.google import init_service
+from itg.api.google import filter_events as gfilter_events
+from itg.api.sync import compare, sync
 
 
-PROG = "otg-sync-cals"
+PROG = "itg-sync-cals"
 
 
 _logger = None
@@ -31,21 +31,21 @@ def logger() -> logging.Logger:
     return _logger
 
 
-def sync_events(outlook_calendar: str, google_credentials: str, google_calendar: str,
-                outlook_id: str = None, outlook_summary: str = None, outlook_output: str = None,
+def sync_events(ical_calendar: str, google_credentials: str, google_calendar: str,
+                ical_id: str = None, ical_summary: str = None, ical_output: str = None,
                 google_id: str = None, google_summary: str = None,
                 dry_run: bool = False, poll_interval: int = None):
     """
-    Syncs the events from the Outlook calendar with the Google one.
+    Syncs the events from the iCal/Outlook calendar with the Google one.
 
-    :param outlook_calendar: the path or URL of the Outlook calendar to list
-    :type outlook_calendar: str
-    :param outlook_id: the regular expression that the event IDs must match, ignored if None
-    :type outlook_id: str
-    :param outlook_summary: the regular expression that the event summaries must match, ignored if None
-    :type outlook_summary: str
-    :param outlook_output: the file to save the outlook calendar to, ignored if None
-    :type outlook_output: str
+    :param ical_calendar: the path or URL of the iCal/Outlook calendar to list
+    :type ical_calendar: str
+    :param ical_id: the regular expression that the event IDs must match, ignored if None
+    :type ical_id: str
+    :param ical_summary: the regular expression that the event summaries must match, ignored if None
+    :type ical_summary: str
+    :param ical_output: the file to save the iCal/Outlook calendar to, ignored if None
+    :type ical_output: str
     :param google_credentials: the credentials JSON file to use
     :type google_credentials: str
     :param google_calendar: the calendar ID
@@ -61,14 +61,14 @@ def sync_events(outlook_calendar: str, google_credentials: str, google_calendar:
     """
     while True:
         # outlook
-        outlook_cal = load_calendar(outlook_calendar, output_file=outlook_output)
-        outlook_events = ofilter_events(outlook_cal, regexp_id=outlook_id, regexp_summary=outlook_summary)
+        ical_cal = load_calendar(ical_calendar, output_file=ical_output)
+        ical_events = ofilter_events(ical_cal, regexp_id=ical_id, regexp_summary=ical_summary)
 
         # google
         google_service = init_service(google_credentials)
         google_events = gfilter_events(google_service, google_calendar, regexp_id=google_id, regexp_summary=google_summary)
 
-        comparison = compare(outlook_events, google_events)
+        comparison = compare(ical_events, google_events)
         errors = sync(google_service, google_calendar, comparison, dry_run=dry_run)
         num_errors = sum([len(errors[x]) for x in errors])
         if num_errors > 0:
@@ -83,13 +83,13 @@ def sync_events(outlook_calendar: str, google_credentials: str, google_calendar:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Syncs the Outlook calendar with the Google one.',
+        description='Syncs the iCal/Outlook calendar with the Google one.',
         prog=PROG,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-c', '--outlook_calendar', metavar="ID", type=str, help='The path or URL of the Outlook calendar', required=True)
-    parser.add_argument('-i', '--outlook_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
-    parser.add_argument('-s', '--outlook_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
-    parser.add_argument('--outlook_output', metavar="FILE", type=str, help='The file to save the Outlook calendar data to.', required=False, default=None)
+    parser.add_argument('-c', '--ical_calendar', metavar="ID", type=str, help='The path or URL of the iCal/Outlook calendar', required=True)
+    parser.add_argument('-i', '--ical_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
+    parser.add_argument('-s', '--ical_summary', metavar="REGEXP", type=str, help='The regular expression that the event summary must match.', required=False, default=None)
+    parser.add_argument('--ical_output', metavar="FILE", type=str, help='The file to save the iCal/Outlook calendar data to.', required=False, default=None)
     parser.add_argument('-L', '--google_credentials', metavar="FILE", type=str, help='Path to the Google OAuth credentials JSON file', required=True)
     parser.add_argument('-C', '--google_calendar', metavar="ID", type=str, help='The path or URL of the Outlook calendar', required=True)
     parser.add_argument('-I', '--google_id', metavar="REGEXP", type=str, help='The regular expression that the event IDs must match.', required=False, default=None)
@@ -100,9 +100,9 @@ def main():
     parsed = parser.parse_args()
 
     init_logging(default_level=parsed.logging_level)
-    sync_events(parsed.outlook_calendar, parsed.google_credentials, parsed.google_calendar,
-                outlook_id=parsed.outlook_id, outlook_summary=parsed.outlook_summary,
-                outlook_output=parsed.outlook_output,
+    sync_events(parsed.ical_calendar, parsed.google_credentials, parsed.google_calendar,
+                ical_id=parsed.ical_id, ical_summary=parsed.ical_summary,
+                ical_output=parsed.ical_output,
                 google_id=parsed.google_id, google_summary=parsed.google_summary,
                 dry_run=parsed.dry_run, poll_interval=parsed.poll_interval)
 

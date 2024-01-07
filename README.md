@@ -10,9 +10,10 @@ Syncing iCal calendars like Outlook (from Office 365) with Google Calendar.
 
 ## Requirements
 
-* Outlook
-  
-  * Publish the calendar that you want to sync with Google Calendar
+* iCal
+
+  * Outlook: publish the calendar that you want to sync with Google Calendar
+  * Other: either obtain public URL for `.ics` calendar or download calendar in iCal format
 
 * Google
 
@@ -29,18 +30,18 @@ pip install git+https://github.com/fracpete/outlook-to-gcal.git
 
 ## How to sync
 
-Setup:
+Setup Outlook:
 
 * fulfill above requirements
 * install library as per above
 * publish Outlook Calendar and determine its URL (Settings -> Calendar -> Share Calendars -> Publish a Calendar -> `OUTLOOK_ICS_URL`)
 * create new Google Calendar (makes it easier to remove when stuffed up)
-* determine ID of Google Calendar using `otg-list-gcals` tool below (`GCAL_ID`)
+* determine ID of Google Calendar using `itg-list-gcals` tool below (`GCAL_ID`)
 
 The following will perform a sync every 15min:
 
 ```bash
-otg-sync-cals \
+itg-sync-cals \
   -l INFO \
   -c OUTLOOK_ICS_URL \
   -i "[^@]+ " \
@@ -62,7 +63,7 @@ Notes:
 ### List Google calendars
 
 ```
-usage: otg-list-gcals [-h] -L FILE [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
+usage: itg-list-gcals [-h] -L FILE [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 Lists available Google calendars and their IDs.
 
@@ -79,7 +80,7 @@ optional arguments:
 ### List Google calendar events
 
 ```
-usage: otg-list-gevents [-h] -L FILE -C ID [-I REGEXP] [-S REGEXP]
+usage: itg-list-gevents [-h] -L FILE -C ID [-I REGEXP] [-S REGEXP]
                         [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 Lists the events in the Outlook Calendar.
@@ -106,22 +107,25 @@ optional arguments:
 ### List Outlook calendar events
 
 ```
-usage: otg-list-oevents [-h] -c ID [-i REGEXP] [-s REGEXP]
+usage: itg-list-oevents [-h] -c ID [-i REGEXP] [-s REGEXP]
+                        [--ical_output FILE]
                         [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
-Lists the events in the Outlook Calendar.
+Lists the events in the iCal/Outlook Calendar.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c ID, --outlook_calendar ID
-                        The path or URL of the Outlook calendar (default:
+  -c ID, --ical_calendar ID
+                        The path or URL of the iCal/Outlook calendar (default:
                         None)
-  -i REGEXP, --outlook_id REGEXP
+  -i REGEXP, --ical_id REGEXP
                         The regular expression that the event IDs must match.
                         (default: None)
-  -s REGEXP, --outlook_summary REGEXP
+  -s REGEXP, --ical_summary REGEXP
                         The regular expression that the event summary must
                         match. (default: None)
+  --ical_output FILE    The file to save the iCal/Outlook calendar data to.
+                        (default: None)
   -l {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --logging_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                         The logging level to use. (default: WARN)
 ```
@@ -130,29 +134,29 @@ optional arguments:
 ### Compare calendars
 
 ```
-usage: otg-compare-cals [-h] -c ID [-i REGEXP] [-s REGEXP] -L FILE -C ID
+usage: itg-compare-cals [-h] -c ID [-i REGEXP] [-s REGEXP] -L FILE -C ID
                         [-I REGEXP] [-S REGEXP]
                         [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
-Compares the Outlook and Google Calendar and outputs the proprosed actions.
+Compares the iCal/Outlook and Google Calendar and outputs the proprosed
+actions.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c ID, --outlook_calendar ID
-                        The path or URL of the Outlook calendar (default:
+  -c ID, --ical_calendar ID
+                        The path or URL of the iCal/Outlook calendar (default:
                         None)
-  -i REGEXP, --outlook_id REGEXP
+  -i REGEXP, --ical_id REGEXP
                         The regular expression that the event IDs must match.
                         (default: None)
-  -s REGEXP, --outlook_summary REGEXP
+  -s REGEXP, --ical_summary REGEXP
                         The regular expression that the event summary must
                         match. (default: None)
   -L FILE, --google_credentials FILE
                         Path to the Google OAuth credentials JSON file
                         (default: None)
   -C ID, --google_calendar ID
-                        The path or URL of the Outlook calendar (default:
-                        None)
+                        The ID of the Google calendar (default: None)
   -I REGEXP, --google_id REGEXP
                         The regular expression that the event IDs must match.
                         (default: None)
@@ -167,23 +171,25 @@ optional arguments:
 ### Sync calendars
 
 ```
-usage: otg-sync-cals [-h] -c ID [-i REGEXP] [-s REGEXP] -L FILE -C ID
-                     [-I REGEXP] [-S REGEXP] [-n] [-p SEC]
+usage: itg-sync-cals [-h] -c ID [-i REGEXP] [-s REGEXP] [--ical_output FILE]
+                     -L FILE -C ID [-I REGEXP] [-S REGEXP] [-n] [-p SEC]
                      [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
-Syncs the Outlook calendar with the Google one.
+Syncs the iCal/Outlook calendar with the Google one.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c ID, --outlook_calendar ID
-                        The path or URL of the Outlook calendar (default:
+  -c ID, --ical_calendar ID
+                        The path or URL of the iCal/Outlook calendar (default:
                         None)
-  -i REGEXP, --outlook_id REGEXP
+  -i REGEXP, --ical_id REGEXP
                         The regular expression that the event IDs must match.
                         (default: None)
-  -s REGEXP, --outlook_summary REGEXP
+  -s REGEXP, --ical_summary REGEXP
                         The regular expression that the event summary must
                         match. (default: None)
+  --ical_output FILE    The file to save the iCal/Outlook calendar data to.
+                        (default: None)
   -L FILE, --google_credentials FILE
                         Path to the Google OAuth credentials JSON file
                         (default: None)

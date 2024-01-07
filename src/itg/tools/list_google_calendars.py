@@ -2,10 +2,10 @@ import argparse
 import traceback
 
 from wai.logging import init_logging, add_logging_level
-from otg.api.google import init_service
+from itg.api.google import init_service
 
 
-PROG = "otg-list-gcals"
+PROG = "itg-list-gcals"
 
 
 def list_calendars(credentials: str):

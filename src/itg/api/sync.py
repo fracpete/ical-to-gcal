@@ -8,8 +8,8 @@ from typing import List, Dict, Any
 import icalendar
 
 from googleapiclient.errors import HttpError
-from otg.api.events import EVENT_ID, EVENT_SUMMARY, EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_RECURRENCE, EVENT_STATUS, EVENT_START, EVENT_END, EVENT_UPDATED
-from otg.api.events import event_field, is_same_event, has_event_changed
+from itg.api.events import EVENT_ID, EVENT_SUMMARY, EVENT_DESCRIPTION, EVENT_LOCATION, EVENT_RECURRENCE, EVENT_STATUS, EVENT_START, EVENT_END, EVENT_UPDATED
+from itg.api.events import event_field, is_same_event, has_event_changed
 
 
 ACTION_ADD = "add"
@@ -34,17 +34,17 @@ def logger() -> logging.Logger:
     """
     global _logger
     if _logger is None:
-        _logger = logging.getLogger("otg.api.sync")
+        _logger = logging.getLogger("itg.api.sync")
     return _logger
 
 
-def compare(outlook_events: List, google_events: List) -> Dict[str, List[Any]]:
+def compare(ical_events: List, google_events: List) -> Dict[str, List[Any]]:
     """
     Compares the Outlook and Google events and returns a dictionary with
     add/delete/update lists of events.
 
-    :param outlook_events: the outlook events to use in the comparison
-    :type outlook_events: list
+    :param ical_events: the outlook events to use in the comparison
+    :type ical_events: list
     :param google_events: the google events to use in the comparsion
     :type google_events: list
     :return: the action dictionary
@@ -52,7 +52,7 @@ def compare(outlook_events: List, google_events: List) -> Dict[str, List[Any]]:
     """
     result = dict()
 
-    for oevent in outlook_events:
+    for oevent in ical_events:
         found = False
         for gevent in google_events:
             if is_same_event(oevent, gevent):
@@ -68,7 +68,7 @@ def compare(outlook_events: List, google_events: List) -> Dict[str, List[Any]]:
 
     for gevent in google_events:
         found = False
-        for oevent in outlook_events:
+        for oevent in ical_events:
             if is_same_event(oevent, gevent):
                 found = True
         if not found:

@@ -2,11 +2,11 @@ import argparse
 import traceback
 
 from wai.logging import init_logging, add_logging_level
-from otg.api.google import init_service, filter_events
-from otg.api.events import event_field, date_range, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE, EVENT_ICALUID
+from itg.api.google import init_service, filter_events
+from itg.api.events import event_field, date_range, EVENT_ID, EVENT_SUMMARY, EVENT_START, EVENT_END, EVENT_RECURRENCE, EVENT_ICALUID
 
 
-PROG = "otg-list-gevents"
+PROG = "itg-list-gevents"
 
 
 def list_events(credentials: str, calendar: str, regexp_id: str = None, regexp_summary: str = None):

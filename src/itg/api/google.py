@@ -13,7 +13,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from otg.api.core import get_default_config_dir
+from itg.api.core import get_default_config_dir
 
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
@@ -31,7 +31,7 @@ def logger() -> logging.Logger:
     """
     global _logger
     if _logger is None:
-        _logger = logging.getLogger("otg.api.google")
+        _logger = logging.getLogger("itg.api.google")
     return _logger
 
 
