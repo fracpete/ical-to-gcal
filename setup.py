@@ -13,7 +13,7 @@ def _read(f):
 
 
 setup(
-    name="outlook-to-gcal",
+    name="ical_to_gcal",
     description="Simple command-line tool for syncing an Outlook Calendar with Google Calendar.",
     long_description=(
         _read('DESCRIPTION.rst') + b'\n' +
